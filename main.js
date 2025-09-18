@@ -4,9 +4,9 @@
 // @description 🚀 简洁高效的GitHub Markdown标题折叠脚本：智能嵌套🧠+快捷键⌨️+目录📑+搜索🔍+状态记忆💾+简约GUI🔘
 // @license     MIT
 // @author      Xyea
-// @namespace   https://github.com/Xyea/GitHub-Collapse-Markdown
-// @homepageURL https://github.com/Xyea/GitHub-Collapse-Markdown
-// @supportURL  https://github.com/Xyea/GitHub-Collapse-Markdown/issues
+// @namespace   https://github.com/XyeaOvO/GitHub-Collapse-Markdown
+// @homepageURL https://github.com/XyeaOvO/GitHub-Collapse-Markdown
+// @supportURL  https://github.com/XyeaOvO/GitHub-Collapse-Markdown/issues
 // @match       https://github.com/*
 // @match       https://gist.github.com/*
 // @match       https://help.github.com/*
