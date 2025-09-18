@@ -1658,11 +1658,20 @@
 		generateTocItems(headers) {
 			return headers.map(header => {
 				const indent = (header.level - 1) * 20;
-				const isCollapsed = header.element.classList.contains(CONFIG.classes.collapsed);
-				const collapseIcon = isCollapsed ? '▶' : '▼';
+				const element = header.element;
+				const isCollapsed = element?.classList?.contains(CONFIG.classes.collapsed);
+				let isNavigable = true;
+				try {
+					if (element && this.collapseManager && typeof this.collapseManager.isHeaderNavigable === 'function') {
+						isNavigable = this.collapseManager.isHeaderNavigable(element);
+					}
+				} catch {}
+				const shouldShowCollapsed = Boolean(isCollapsed || !isNavigable);
+				const collapseIcon = shouldShowCollapsed ? '▶' : '▼';
+				const collapsedClass = shouldShowCollapsed ? ' ghcm-toc-item-collapsed' : '';
 
 				return `
-					<div class="ghcm-toc-item" style="padding-left: ${indent}px;" data-level="${header.level}" data-header-id="${header.id}" tabindex="0">
+					<div class="ghcm-toc-item${collapsedClass}" style="padding-left: ${indent}px;" data-level="${header.level}" data-header-id="${header.id}" tabindex="0">
 						<span class="ghcm-toc-collapse-icon">${collapseIcon}</span>
 						<a href="#${header.id}" class="ghcm-toc-link" data-header-id="${header.id}">
 							${header.text}
@@ -1750,18 +1759,44 @@
 			const tocItems = this.tocContainer.querySelectorAll('.ghcm-toc-item');
 			tocItems.forEach(item => {
 				const link = item.querySelector('.ghcm-toc-link');
-				const headerId = link.getAttribute('data-header-id');
 				const icon = item.querySelector('.ghcm-toc-collapse-icon');
+				if (!link || !icon) return;
 
-				// 查找对应的标题元素
-				const headerElement = document.getElementById(headerId) ||
-									 document.querySelector(`[id="${headerId}"]`) ||
-									 document.querySelector(`#user-content-${headerId}`);
+				const headerId = link.getAttribute('data-header-id');
+				if (!headerId) return;
 
-				if (headerElement && icon) {
-					const isCollapsed = headerElement.classList.contains('ghcm-collapsed');
-					icon.textContent = isCollapsed ? '▶' : '▼';
+				const safeId = (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') ? CSS.escape(headerId) : headerId;
+				let headerElement = document.getElementById(headerId);
+				if (!headerElement) {
+					try { headerElement = document.querySelector(`[id="${headerId}"]`); } catch {}
 				}
+				if (!headerElement && safeId) {
+					try { headerElement = document.querySelector(`#${safeId}`); } catch {}
+				}
+				if (!headerElement && safeId) {
+					try { headerElement = document.querySelector(`#user-content-${safeId}`); } catch {}
+				}
+				if (!headerElement) {
+					try { headerElement = document.querySelector(`#user-content-${headerId}`); } catch {}
+				}
+
+				if (!headerElement) {
+					icon.textContent = '▼';
+					item.classList.remove('ghcm-toc-item-collapsed');
+					return;
+				}
+
+				const isCollapsed = headerElement.classList.contains(CONFIG.classes.collapsed);
+				let isNavigable = true;
+				try {
+					if (this.collapseManager && typeof this.collapseManager.isHeaderNavigable === 'function') {
+						isNavigable = this.collapseManager.isHeaderNavigable(headerElement);
+					}
+				} catch {}
+
+				const shouldShowCollapsed = Boolean(isCollapsed || !isNavigable);
+				icon.textContent = shouldShowCollapsed ? '▶' : '▼';
+				item.classList.toggle('ghcm-toc-item-collapsed', shouldShowCollapsed);
 			});
 		}
 
@@ -1856,14 +1891,45 @@
 				const headerEl = document.querySelector('header[role="banner"], .Header, .AppHeader-globalBar');
 				const headerOffset = (headerEl?.offsetHeight || 80) + 20;
 				const pos = window.scrollY + headerOffset + 1;
-				let active = headers[0];
+				let active = null;
+				let firstNavigable = null;
+
 				for (const h of headers) {
-					const rect = h.element.getBoundingClientRect();
+					const element = h.element;
+					if (!element) continue;
+
+					let isNavigable = true;
+					try {
+						if (this.collapseManager && typeof this.collapseManager.isHeaderNavigable === 'function') {
+							isNavigable = this.collapseManager.isHeaderNavigable(element);
+						}
+					} catch {}
+
+					if (isNavigable && !firstNavigable) {
+						firstNavigable = h;
+					}
+
+					if (!isNavigable) {
+						continue;
+					}
+
+					const rect = element.getBoundingClientRect();
 					const top = rect.top + window.pageYOffset;
-					if (top <= pos) active = h; else break;
+					if (top <= pos) {
+						active = h;
+					} else {
+						break;
+					}
 				}
+
+				if (!active) {
+					active = firstNavigable;
+				}
+
 				if (active) {
-					this.highlightTocById(active.id);
+					if (active.id) {
+						this.highlightTocById(active.id);
+					}
 					this.collapseManager?.setActiveHeading(active.element);
 				}
 			} catch {}
@@ -2992,6 +3058,14 @@
 					border-radius: 4px;
 					margin: 1px 8px;
 					cursor: pointer;
+				}
+
+				.ghcm-toc-item.ghcm-toc-item-collapsed {
+					opacity: 0.78;
+				}
+
+				.ghcm-toc-item.ghcm-toc-item-collapsed .ghcm-toc-link {
+					color: var(--color-fg-muted, #656d76);
 				}
 
 				.ghcm-toc-item:hover {
