@@ -90,8 +90,7 @@ GitHub Collapse Markdown 是一款用户脚本（Tampermonkey/Violentmonkey 等�
 - **帮助面板**：菜单中的“使用说明”会打开一份内置使用指南，适合快速查阅快捷键、技巧与设置项。
 
 ## 界面预览
-![Markdown](assets/markdown.png)
-![控制面板](assets/menu.png)
+![Markdown](assets/image.png)
 
 ## 数据存储与隐私
 脚本依赖脚本管理器的 `GM_setValue / GM_getValue` API 储存必要信息，均保存在本地浏览器中，不会上传或同步到远端。主要持久化内容包括：
