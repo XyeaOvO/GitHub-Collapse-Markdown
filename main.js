@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        GitHub Collapse Markdown
-// @version     3.2.4
+// @version     3.3.0
 // @description 🚀 简洁高效的GitHub Markdown标题折叠脚本：智能嵌套🧠+快捷键⌨️+目录📑+搜索🔍+状态记忆💾+简约GUI🔘
 // @license     MIT
 // @author      Xyea
