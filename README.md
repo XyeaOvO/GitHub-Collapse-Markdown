@@ -1,6 +1,6 @@
 # GitHub Collapse Markdown
 
-![Version](https://img.shields.io/badge/version-3.2.4-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.3.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Userscript](https://img.shields.io/badge/userscript-Tampermonkey%2FViolentmonkey-orange.svg)
 
@@ -123,7 +123,7 @@ GitHub Collapse Markdown 是一款用户脚本（Tampermonkey/Violentmonkey 等�
 4. 提交 PR 前请描述所做更改、影响范围与测试方式。
 
 ## 版本信息
-- 当前公开版本：**3.2.4**
+- 当前公开版本：**3.3.0**
 - 更新重点：现代化 GUI、目录面板、搜索面板、书签系统、性能模式、状态记忆与可自定义配色。
 
 后续计划将持续优化长文档性能、提升目录同步体验并完善国际化支持。
